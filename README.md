@@ -20,35 +20,32 @@ Things we have done on the server:
 *At the end we have a check for file integrity - After all the chunk are combined we check the MIME type and total file size to cross verify there is no corruption in the final file created on the server - we cross check with the last chunk and total file size being sent by the client(this data is sent on every chunk)
 * We have a batch job running for cleanup activity of target directory for part chunk files- when a chunk has not been received for a given period time (time can be configurable) it automatically discards the <filename>.part file
  
- 
- --Usage Code:---
- 
-////////////////////////////////////////////////---
+ ## Usage Code
 
+ Import by draging the
+ `HDMultiPartImageUpload.h` and `HDMultiPartImageUpload.m`
+ to your project file
+ 
+ Add the following code to your class (eg `MyDemoVC`) and start uploading.
+
+``` 
+#import HDMultiPartImageUpload.h 
+
+@implementation MyDemoVC
+@property(nonatomic,strong) NSString * filePath
+@end 
+
+@implementation MyDemoVC 
+ 
 -(void)demoupload 
 {
-
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    
-    NSString *documentsDirectory = [paths objectAtIndex:0]; 
-    
-    documentsDirectory = [NSString stringWithFormat:@"%@/ProfilePic/",documentsDirectory]; 
-    
-    NSFileManager*fmanager = [NSFileManager defaultManager]; 
-    
-    if(![fmanager fileExistsAtPath:documentsDirectory]) 
-    {
-        [fmanager createDirectoryAtPath:documentsDirectory withIntermediateDirectories:YES attributes:nil error:nil];
-        
-    }
-    
-    NSString * filePath =  [NSString stringWithFormat:@"%@",documentsDirectory];
+   [self setImageFilePath];// Set self.filepath property to read the file path
     
     NSMutableDictionary *postParam = [[NSMutableDictionary alloc]init];
     
     [postParam addEntriesFromDictionary:[self demoPostDict]];
     
-    HDMultiPartImageUpload *obj = [[HDMultiPartImageUpload alloc]init];
+    HDMultiPartImageUpload *obj = [[HDMultiPartImageUpload alloc]init]; //intilaize the object and set all the required parameters.
     
     obj.oneChunkSize = 1024 *10;
     
@@ -63,7 +60,8 @@ Things we have done on the server:
     [obj startUploadImagesToServer];
 }
 
--(NSMutableDictionary*)demoPostDict
+-(NSMutableDictionary*)demoPostDict // Create a dictionary of the parameters needed to be passed at server
+
 {
     NSMutableDictionary *param = [[NSMutableDictionary alloc]init];
     
@@ -125,4 +123,29 @@ Things we have done on the server:
     return param;
     
 }
-///////////////////////////////////////////////////////////------------
+
+-(void)setImageFilePath {
+ NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    
+    NSString *documentsDirectory = [paths objectAtIndex:0]; 
+    
+    documentsDirectory = [NSString stringWithFormat:@"%@/ProfilePic/",documentsDirectory]; // navigate the image dicrectory
+    
+    NSFileManager*fmanager = [NSFileManager defaultManager]; 
+    
+    if(![fmanager fileExistsAtPath:documentsDirectory]) // create file path if not there
+    {
+        [fmanager createDirectoryAtPath:documentsDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+        
+    }
+    
+    self.filePath =  [NSString stringWithFormat:@"%@",documentsDirectory];
+}
+
+```
+
+
+
+## License
+iOSMultipartUpload is available under the MIT license. See the LICENSE file for more info.
+
